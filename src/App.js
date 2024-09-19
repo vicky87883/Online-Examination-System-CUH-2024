@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, NavLink, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Button, Container, Dropdown, Badge, Form } from 'react-bootstrap';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -10,9 +10,10 @@ import AdminLogin from './pages/Login/AdminLogin';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import './App.css';
-import Logo from './Assets/imgs/logo.jpg'; 
-import Favicon from './Assets/imgs/favicon.jpg'; 
+import Logo from './Assets/imgs/logo.jpg';
+import Favicon from './Assets/imgs/favicon.jpg';
 import Avatar from './Assets/imgs/avatar.webp';
+
 const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed }) => {
   const location = useLocation();
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
@@ -28,30 +29,40 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
       {!isAuthPage && (
         <nav className={`bg-dark text-white p-3 sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="logo-section text-center mb-3">
-            <Link to="/">
+            <NavLink to="/">
               {!sidebarCollapsed ? (
                 <img src={Logo} alt="Logo" className="logo-img" style={{ maxWidth: '100%', height: '50px' }} />
               ) : (
                 <img src={Favicon} alt="Favicon" className="favicon-img" style={{ maxWidth: '50px', height: '50px' }} />
               )}
-            </Link>
+            </NavLink>
           </div>
 
           <ul className="nav flex-column">
             <li className="nav-item">
-              <Link to="/" className="nav-link text-white">
+              <NavLink
+                to="/"
+                className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+                end
+              >
                 <i className="bi bi-house s-icon"></i> {!sidebarCollapsed && 'Dashboard'}
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link to="/about" className="nav-link text-white">
+              <NavLink
+                to="/about"
+                className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+              >
                 <i className="bi bi-info-circle s-icon"></i> {!sidebarCollapsed && 'About'}
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link to="/contact" className="nav-link text-white">
+              <NavLink
+                to="/contact"
+                className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+              >
                 <i className="bi bi-envelope s-icon"></i> {!sidebarCollapsed && 'Contact'}
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
               <div className="nav-link text-white" onClick={toggleLoginDropdown} style={{ cursor: 'pointer' }}>
@@ -61,19 +72,28 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
               {loginDropdownOpen && (
                 <ul className="nav flex-column ms-3">
                   <li className="nav-item">
-                    <Link to="/login/student" className="nav-link text-white">
+                    <NavLink
+                      to="/login/student"
+                      className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+                    >
                       Student Login
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/login/teacher" className="nav-link text-white">
+                    <NavLink
+                      to="/login/teacher"
+                      className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+                    >
                       Teacher Login
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/login/admin" className="nav-link text-white">
+                    <NavLink
+                      to="/login/admin"
+                      className={({ isActive }) => `nav-link text-white ${isActive ? 'active-link' : ''}`}
+                    >
                       Admin Login
-                    </Link>
+                    </NavLink>
                   </li>
                 </ul>
               )}
@@ -86,7 +106,7 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
         {!isAuthPage && (
           <Navbar bg="light" expand="lg" className="mb-4">
             <Container>
-              <Button classname="toggle-btn" variant="outline-secondary" onClick={toggleSidebar} className="me-3">
+              <Button variant="outline-secondary" onClick={toggleSidebar} className="me-3">
                 <i className="bi bi-list"></i>
               </Button>
               <Navbar.Brand className="d-lg-none">
@@ -105,30 +125,32 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
                 <Nav className="ms-auto d-flex align-items-center">
                   <div className="d-flex align-items-center">
                     <div className="me-3 position-relative">
-                      <i className="bi bi-bell"></i>
-                      <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle ">
+                      <i className="bi bi-flag-fill"></i>
+                    </div>
+                    <div className="me-3 position-relative">
+                      <i className="bi bi-arrows-fullscreen"></i>
+                    </div>
+                    <div className="me-3 position-relative">
+                      <i className="bi bi-bell r-icon"></i>
+                      <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle">
                         2
                       </Badge>
                     </div>
                     <div className="me-3 position-relative">
-                      <i className="bi bi-envelope"></i>
-                      <Badge bg="success" className="position-absolute top-0 start-100 translate-middle ">
+                      <i className="bi bi-envelope r-icon"></i>
+                      <Badge bg="success" className="position-absolute top-0 start-100 translate-middle">
                         3
                       </Badge>
                     </div>
                     <Dropdown>
                       <Dropdown.Toggle variant="light" id="dropdown-basic">
-                      <img 
-          src={Avatar} 
-          alt="Profile Avatar" 
-          style={{ width: '35px', height: '35px', borderRadius: '50%' }} 
-        />
+                        <img src={Avatar} alt="Profile Avatar" style={{ width: '35px', height: '35px', borderRadius: '50%' }} />
                       </Dropdown.Toggle>
                       <Dropdown.Menu align="end">
-                        <Dropdown.Item as={Link} to="/profile">Profile</Dropdown.Item>
-                        <Dropdown.Item as={Link} to="/settings">Settings</Dropdown.Item>
+                        <Dropdown.Item as={NavLink} to="/profile">Profile</Dropdown.Item>
+                        <Dropdown.Item as={NavLink} to="/settings">Settings</Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item as={Link} to="/logout">Logout</Dropdown.Item>
+                        <Dropdown.Item as={NavLink} to="/logout">Logout</Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
                   </div>
@@ -153,15 +175,14 @@ const App = () => {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
   const handleLogin = (email, password) => {
-  if (email === 'student@example.com' && password === 'password') {
-    setIsAuthenticated(true);
-    return true; // <-- Login success
-  } else {
-    alert('Invalid credentials');
-    return false; // <-- Login failed
-  }
-};
-
+    if (email === 'student@example.com' && password === 'password') {
+      setIsAuthenticated(true);
+      return true;
+    } else {
+      alert('Invalid credentials');
+      return false;
+    }
+  };
 
   return (
     <Router>
