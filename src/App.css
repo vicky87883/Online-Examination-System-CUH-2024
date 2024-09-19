@@ -12,7 +12,22 @@ body{
   box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px !important;
 
 }
+.navbar{
+  background-color: #FFFFFF !important;
+  box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px !important;
 
+}
+.btn:hover
+{
+  background-color:#e9e7f8 !important;
+  color: #5c4fb3 !important;
+  border: #5c4fb3;
+}
+.btn{
+  background-color:#e9e7f8 !important;
+  color: #5c4fb3 !important;
+  border: none;
+}
 .sidebar.collapsed {
   width: 80px;
   box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px !important;
@@ -47,8 +62,23 @@ body{
 .sidebar.collapsed .nav-link i {
   margin-right: 0;
 }
-#dash-icon{
-  padding-right: 5px;
+.s-icon{
+  padding-right: 10px;
+}
+.search-bar{
+  position: relative;
+}
+.search-btn{
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  background-color: #fff !important;
+}
+.search-btn:hover{
+  background-color: #fff !important;
+}
+.search-input{
+  border-radius: 120px;
 }
 /* Mobile Sidebar */
 @media (max-width: 992px) {
