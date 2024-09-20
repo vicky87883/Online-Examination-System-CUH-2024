@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, NavLink, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Button, Container, Dropdown, Badge, Form } from 'react-bootstrap';
 import Home from './pages/Home';
@@ -23,9 +23,33 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
   const toggleLoginDropdown = () => {
     setLoginDropdownOpen(!loginDropdownOpen);
   };
+  const adminPanelRef = useRef(null);
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      if (adminPanelRef.current.requestFullscreen) {
+        adminPanelRef.current.requestFullscreen();
+      } else if (adminPanelRef.current.mozRequestFullScreen) { // Firefox
+        adminPanelRef.current.mozRequestFullScreen();
+      } else if (adminPanelRef.current.webkitRequestFullscreen) { // Chrome, Safari and Opera
+        adminPanelRef.current.webkitRequestFullscreen();
+      } else if (adminPanelRef.current.msRequestFullscreen) { // IE/Edge
+        adminPanelRef.current.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
 
   return (
-    <div className="d-flex">
+    <div className="d-flex" ref={adminPanelRef} style={{ 
+      backgroundColor: '#f8f9fa',  // Keep background light gray or any color you want
+      height: '100vh',
+      color: 'black'  // Ensure text color is also styled properly
+    }}>
       {!isAuthPage && (
         <nav className={`bg-dark text-white p-3 sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="logo-section text-center mb-3">
@@ -128,7 +152,9 @@ const AppLayout = ({ children, isAuthenticated, toggleSidebar, sidebarCollapsed 
                       <i className="bi bi-flag-fill"></i>
                     </div>
                     <div className="me-3 position-relative">
+                    <button onClick={toggleFullScreen} className="btn btn-outline-secondary">
                       <i className="bi bi-arrows-fullscreen"></i>
+                      </button>
                     </div>
                     <div className="me-3 position-relative">
                       <i className="bi bi-bell r-icon"></i>

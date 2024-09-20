@@ -71,6 +71,7 @@ body {
 .navbar {
   background-color: #FFFFFF !important;
   box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px !important;
+  z-index: 100000;
 }
 
 /* Button Styles */
@@ -113,22 +114,23 @@ body {
 }
 
 /* Mobile Sidebar Styles */
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .sidebar {
     position: fixed;
     width: 100%;
-    z-index: 1000;
-    height: 100vh;
-    display: none;
-    box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px !important;
+    height: 100%;
+    left: -100%;
+    z-index: 100;
+    transition: all 0.3s;
   }
 
-  .sidebar.open {
-    display: block;
+  .sidebar.collapsed {
+    left: 0;
   }
 
-  #toggle-icon {
-    display: block;
+  .content {
+    margin-left: 0;
+    padding: 20px;
   }
 }
 
