@@ -1,0 +1,126 @@
+/* Container and layout styles */
+.quiz-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 500px;
+  }
+  
+  .quiz-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .quiz-header {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+  }
+  
+  .free {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .days-left {
+    background-color: #6f42c1;
+    color: white;
+  }
+  
+  /* Content styling */
+  .quiz-content h3 {
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  
+  .users-count {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 5px;
+  }
+  
+  .quiz-details {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .quiz-details li {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  /* Button */
+  .start-btn {
+    background-color: #00d1ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .start-btn:hover {
+    background-color: #00b8e6;
+  }
+  
+  /* Footer styles */
+  .quiz-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .syllabus-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .syllabus-link:hover {
+    text-decoration: underline;
+  }
+  
+  .languages {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .quiz-card-container {
+      padding: 10px;
+    }
+  
+    .quiz-card {
+      padding: 15px;
+    }
+  
+    .quiz-content h3 {
+      font-size: 18px;
+    }
+  
+    .quiz-details {
+      gap: 10px;
+    }
+  }
+  

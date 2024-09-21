@@ -1,0 +1,65 @@
+/* QuizList.css */
+
+/* Center the loading spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .quiz-list-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .quiz-list-table {
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Table header styling */
+  .table-header {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+  }
+  
+  /* Table row hover effect */
+  .quiz-list-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Table data cell styling */
+  .quiz-list-table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  /* Custom button styling */
+  .quiz-list-table td .btn {
+    border-radius: 20px;
+    font-size: 0.9rem;
+    padding: 5px 12px;
+  }
+  
+  /* Small screens responsive */
+  @media (max-width: 768px) {
+    .quiz-list-container {
+      padding: 10px;
+    }
+  
+    .quiz-list-table td {
+      font-size: 0.9rem;
+    }
+  
+    .quiz-list-table td .btn {
+      font-size: 0.8rem;
+    }
+  }
+  
