@@ -32,5 +32,5 @@ Follow these steps to set up ExamPro on your local machine.
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/exampro.git
+   git clone https://github.com/vicky87883/exampro.git
    cd exampro
