@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'examapi'
+    'examapi',
+    'apikeys',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -79,13 +81,16 @@ WSGI_APPLICATION = 'admin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'exampro',
+        'NAME': 'test',
         'USER': 'postgres',
         'PASSWORD': '123',
         'HOST': 'localhost',  # Set to an IP address or domain if the database is remote
         'PORT': '5432',       # Default PostgreSQL port
     }
 }
+STATICFILES_DIRS = [
+    "C:/Users/hp/Downloads/examination-project-repo/Online-Examination-System-CUH-2024/admin/static",
+]
 
 
 
@@ -106,7 +111,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -123,11 +130,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+
+BASE_DIR = Path(__file__).resolve().parent.parent  # Typically already defined
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
+STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional: where your static files live during development
+
+STATIC_ROOT = BASE_DIR / "staticfiles"  # This can be any directory of your choice
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -1,11 +1,10 @@
 # myapp/urls.py
 from tkinter.font import names
-
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.signup, name='home'),
     path('index',views.index,name='index'),
     path('analytics',views.analytics,name='analytics'),
     path('assignment',views.assignment,name='assignment'),
@@ -24,7 +23,7 @@ urlpatterns = [
     path('reset-password',views.resetpassword,name='reset-password'),
     path('resources',views.resources,name='resources'),
     path('setting',views.setting,name='setting'),
-    path('sign-in',views.signin,name='sign-in'),
+    path('sign-in',views.signin,name='signin'),
     path('sign-up',views.signup,name='sign-up'),
     path('starred',views.starred,name='starred'),
     path('student-courses',views.studentcourses,name='student-courses'),
@@ -36,5 +35,9 @@ urlpatterns = [
     path('about-course',views.aboutcourse,name='about-course'),
     path('create-quiz',views.createquiz,name='create-quiz'),
     path('publish-course',views.publishcourse,name='publish-course'),
-    path('pricing-plan',views.pricingplan,name='pricing-plan')
+    path('pricing-plan',views.pricingplan,name='pricing-plan'),
+    path('register', views.register, name='register'),
+    path('login', views.user_login, name='login'),
+    path('logout', views.user_logout, name='logout'),
+    path('home', views.home, name='home'),
 ]
