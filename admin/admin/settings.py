@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'examapi',
     'apikeys',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -72,8 +73,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'admin.wsgi.application'
-
-
+REST_FRAMEWORK = {
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.IsAuthenticated',
+        ],
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',  # enables simple command line authentication
+            'rest_framework.authentication.SessionAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
+        )
+    }
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 # settings.py

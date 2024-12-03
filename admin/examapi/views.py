@@ -2,6 +2,7 @@
 from django.shortcuts import redirect, render
 from django.template.context_processors import request
 import django.contrib.auth
+import requests
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
@@ -11,6 +12,29 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Question, UserExamSession
+from .serializers import QuestionSerializer, UserExamSessionSerializer
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+from rest_framework.response import Response as DRFResponse
+from rest_framework import status
+from django.contrib.auth.models import User
+from .models import Question, UserExamSession
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+import json  # Add this import at the top of your views.py file
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
+from django.http import JsonResponse
 def register(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -58,10 +82,22 @@ def user_logout(request):
 @login_required
 def home(request):
     return render(request, 'index-2.html')
+
 def analytics(request):
     return render(request, 'analytics.html')
 def assignment(request):
-    return render(request,'assignment.html')
+    # Fetch data from the API
+    api_url = "http://127.0.0.1:8000/api/apikeys/"
+    response = requests.get(api_url)
+    
+    # Parse the JSON response
+    if response.status_code == 200:
+        api_data = response.json()
+    else:
+        api_data = {"error": "Could not fetch data"}
+    
+    # Pass data to the template
+    return render(request, 'assignment.html', {'api_data': api_data})
 def coursedetails(request):
     return render(request,'course-details.html')
 def createcourse(request):
@@ -121,3 +157,120 @@ def createquiz(request):
     return render(request,'create-quiz.html')
 def publishcourse(request):
     return render(request,'publish-course.html')
+
+@login_required
+def instructions_view(request):
+    return render(request, 'instructions.html')
+
+def exam_view(request):
+    return render(request, 'exam.html')
+
+class StartExamView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        questions = Question.objects.all()
+        serializer = QuestionSerializer(questions, many=True)
+        return Response(serializer.data)
+
+class SubmitResponseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        question = Question.objects.get(id=data['question_id'])
+        session, created = UserExamSession.objects.get_or_create(
+            user=request.user,
+            question=question,
+        )
+        session.selected_option = data['selected_option']
+        session.is_marked_for_review = data.get('is_marked_for_review', False)
+        session.save()
+        return Response({"message": "Response saved successfully!"})
+    
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
+class QuestionAPI(APIView):
+    def get(self, request):
+        questions = Question.objects.all()
+        serializer = QuestionSerializer(questions, many=True)
+        return DRFResponse(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return DRFResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return DRFResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserExamSessionAPI(APIView):
+    def get(self, request):
+        user_sessions = UserExamSession.objects.filter(user=request.user)
+        serializer = UserExamSessionSerializer(user_sessions, many=True)
+        return DRFResponse(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data
+        user = request.user
+        question = Question.objects.get(id=data['question_id'])
+        session, created = UserExamSession.objects.get_or_create(
+            user=user,
+            question=question,
+        )
+        session.selected_option = data.get('selected_option')
+        session.is_marked_for_review = data.get('is_marked_for_review', False)
+        session.save()
+        return DRFResponse({
+            'message': 'Response saved successfully.',
+            'session': UserExamSessionSerializer(session).data,
+        }, status=status.HTTP_201_CREATED)
+    
+def submit_exam(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            correct_answers = 0
+            wrong_answers = 0
+
+            for question in data.get('answers', []):
+                question_id = question.get('question_id')
+                selected_option = question.get('selected_option')
+
+                # Fetch the correct answer for the question from the database
+                try:
+                    question_obj = Question.objects.get(id=question_id)
+                    correct_answer = question_obj.correct_option  # Ensure this field exists in your model
+                except Question.DoesNotExist:
+                    return JsonResponse({'error': f'Question with ID {question_id} does not exist.'}, status=400)
+
+                # Validate the selected answer
+                if str(selected_option) == str(correct_answer):  # Compare as strings to avoid type mismatch
+                    correct_answers += 1
+                else:
+                    wrong_answers += 1
+
+            # Save the result in the session
+            request.session['exam_result'] = {
+                'correct_answers': correct_answers,
+                'wrong_answers': wrong_answers,
+                'total_questions': len(data.get('answers', [])),
+            }
+
+            # Redirect to the results page
+            return JsonResponse({'redirect_url': '/exam_result/'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def exam_result(request):
+    # Retrieve the result data from the session
+    result = request.session.get('exam_result', {})
+    
+    if not result:
+        return render(request, 'error.html', {'message': 'No result found. Please attempt the exam again.'})
+    
+    return render(request, 'result.html', {'result': result})

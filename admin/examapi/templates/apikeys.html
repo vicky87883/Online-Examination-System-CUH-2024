@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Keys</title>
+</head>
+<body>
+    <h1>API Keys</h1>
+    {% if api_data.error %}
+        <p>Error: {{ api_data.error }}</p>
+    {% else %}
+        <ul>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Lesson</th>
+                        <th>Deadline</th>
+                        <th>Sent</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in api_data %}
+                    <tr>
+                        <td>{{ item.students }}</td>
+                        <td>{{ item.lesson }}</td>
+                        <td>{{ item.deadline }}</td>
+                        <td>{{ item.sent }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.actions }}</td>
+                        <td>
+                            <a href="#" class="btn btn-primary">View More</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">No data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </ul>
+    {% endif %}
+</body>
+</html>

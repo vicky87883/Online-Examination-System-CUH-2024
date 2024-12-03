@@ -3,7 +3,6 @@
 
 <head>
     {% load static %}
-
     <meta charset=UTF-8>
     <meta http-equiv=X-UA-Compatible content="IE=edge">
     <meta name=viewport content="width=device-width, initial-scale=1.0">
@@ -21,17 +20,14 @@
     <link rel=stylesheet href="{% static 'assets/css/jquery-jvectormap-2.0.5.css'%}">
     <link rel=stylesheet href="{% static 'assets/css/main.css'%}">
 </head>
-
 <body>
     <div class=preloader>
         <div class=loader></div>
     </div>
     <div class=side-overlay></div>
     {% include 'aside.html' %}
-
     <div class=dashboard-main-wrapper>
         {% include 'navbar.html' %}
-
         <div class=dashboard-body>
             <div class="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
                 <div class="breadcrumb mb-24">
@@ -87,6 +83,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for item in api_data %}
                             <tr>
                                 <td class=fixed-width>
                                     <div class=form-check>
@@ -95,25 +92,24 @@
                                 </td>
                                 <td>
                                     <div class="flex-align gap-8">
-                                        <img src="{% static 'assets/images/thumbs/student-img1.png'%}" alt
-                                            class="w-40 h-40 rounded-circle">
-                                        <span class="h6 mb-0 fw-medium text-gray-300">Jane Cooper</span>
+                                        <img src="{% static 'assets/images/thumbs/student-img1.png' %}" alt class="w-40 h-40 rounded-circle">
+                                        <span class="h6 mb-0 fw-medium text-gray-300">{{ item.students }}</span>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">Web & Mobile Design</span>
+                                    <span class="h6 mb-0 fw-medium text-gray-300">{{ item.lesson }}</span>
                                 </td>
                                 <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">Nov 18, 2024</span>
+                                    <span class="h6 mb-0 fw-medium text-gray-300">{{ item.deadline }}</span>
                                 </td>
                                 <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">Nov 18, 2024</span>
+                                    <span class="h6 mb-0 fw-medium text-gray-300">{{ item.deadline }}</span>
                                 </td>
                                 <td>
                                     <span
                                         class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
                                         <span class="w-6 h-6 bg-teal-600 rounded-circle flex-shrink-0"></span>
-                                        Send
+                                        {{ item.sent }}
                                     </span>
                                 </td>
                                 <td>
@@ -122,20 +118,10 @@
                                         More</a>
                                 </td>
                             </tr>
-                            
-                            
-                           
-                           
-                            
-                            
-                          
-                           
-                            
-                           
+                            {% endfor %}
                             
                         </tbody>
                     </table>
-                    
                 </div>
                 <div class="card-footer flex-between flex-wrap">
                     <span class=text-gray-900>Showing 1 to 10 of 12 entries</span>
@@ -151,15 +137,6 @@
                         </li>
                         <li class=page-item>
                             <a class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium" href=#>...</a>
-                        </li>
-                        <li class=page-item>
-                            <a class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium" href=#>8</a>
-                        </li>
-                        <li class=page-item>
-                            <a class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium" href=#>9</a>
-                        </li>
-                        <li class=page-item>
-                            <a class="page-link h-44 w-44 flex-center text-15 rounded-8 fw-medium" href=#>10</a>
                         </li>
                     </ul>
                 </div>

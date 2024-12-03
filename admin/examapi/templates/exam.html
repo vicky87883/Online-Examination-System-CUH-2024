@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 16px;
+            background: #343a40;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            margin: 20px;
+        }
+        .question-section {
+            flex: 3;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .question-navigation {
+            flex: 1;
+            margin-left: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question-container p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .options label {
+            display: block;
+            margin: 5px 0;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .btn {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .navigation-buttons button {
+            margin: 5px;
+            padding: 10px;
+            width: 40px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .navigation-buttons button.active {
+            background-color: #007bff;
+        }
+        .navigation-buttons button:hover {
+            background-color: #5a6268;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .result-section {
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .result-section h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        let timerDuration = 20 * 60; // 20 minutes in seconds
+
+        function startTimer() {
+            const timerElement = document.getElementById("timer");
+            setInterval(() => {
+                if (timerDuration > 0) {
+                    timerDuration--;
+                    const minutes = Math.floor(timerDuration / 60);
+                    const seconds = timerDuration % 60;
+                    timerElement.textContent = `Time Left: ${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+                } else {
+                    alert("Time is up!");
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        async function loadQuestions() {
+            const response = await fetch('/api/questions/');
+            const questions = await response.json();
+            const container = document.getElementById('questions-container');
+            const navigation = document.getElementById('navigation-buttons');
+            let questionNumber = 1;
+
+            questions.forEach(q => {
+                // Add question to main container
+                container.innerHTML += `
+                    <div id="question-${q.id}" class="question-container">
+                        <p>Question No. ${questionNumber}: ${q.text}</p>
+                        <div class="options">
+                            <label><input type="radio" name="q${q.id}" value="1"> ${q.option1}</label>
+                            <label><input type="radio" name="q${q.id}" value="2"> ${q.option2}</label>
+                            <label><input type="radio" name="q${q.id}" value="3"> ${q.option3}</label>
+                            <label><input type="radio" name="q${q.id}" value="4"> ${q.option4}</label>
+                        </div>
+                        <div class="controls">
+                            <button class="btn" type="button" onclick="markForReview(${q.id})">Mark for Review</button>
+                            <button class="btn" type="button" onclick="clearResponse(${q.id})">Clear Response</button>
+                        </div>
+                    </div>
+                `;
+
+                // Add question to navigation buttons
+                navigation.innerHTML += `
+                    <button id="nav-btn-${q.id}" onclick="navigateTo(${q.id})">${questionNumber}</button>
+                `;
+                questionNumber++;
+            });
+        }
+
+        function navigateTo(questionId) {
+            document.getElementById(`question-${questionId}`).scrollIntoView({ behavior: "smooth" });
+            document.querySelectorAll('.navigation-buttons button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`nav-btn-${questionId}`).classList.add('active');
+        }
+
+        function markForReview(questionId) {
+            submitAnswer(questionId, null, true);
+            alert('Question marked for review');
+        }
+
+        function clearResponse(questionId) {
+            const options = document.getElementsByName(`q${questionId}`);
+            options.forEach(option => option.checked = false);
+            alert('Response cleared');
+        }
+
+        async function submitAnswer(questionId, selectedOption, isMarkedForReview = false) {
+            await fetch('/api/user_exam_sessions/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    question_id: questionId,
+                    selected_option: selectedOption,
+                    is_marked_for_review: isMarkedForReview,
+                }),
+            });
+        }
+
+        async function submitExam() {
+    const answers = [];
+
+    // Collect answers from the form
+    document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+        const questionId = input.name.replace('q', '');
+        const selectedOption = input.value;
+        answers.push({ question_id: questionId, selected_option: selectedOption });
+    });
+
+    try {
+        const response = await fetch('/api/submit_exam/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: JSON.stringify({ answers }),
+        });
+
+        const result = await response.json();
+        if (result.redirect_url) {
+            window.location.href = result.redirect_url; // Redirect to the results page
+        } else {
+            alert('Error submitting exam. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error submitting exam:', error);
+        alert('Failed to submit the exam.');
+    }
+}
+
+        function displayResult(result) {
+            const resultSection = document.getElementById('result-section');
+            resultSection.innerHTML = `
+                <h3>Exam Results</h3>
+                <p>Correct Answers: ${result.correct_answers_count}</p>
+                <p>Incorrect Answers: ${result.incorrect_answers_count}</p>
+                <p>Total Score: ${result.score}%</p>
+                <h4>Correct Answers</h4>
+                <ul>
+                    ${result.correct_answers.map(ans => `<li>${ans.question} - Correct Answer: ${ans.correct_option}</li>`).join('')}
+                </ul>
+                <h4>Incorrect Answers</h4>
+                <ul>
+                    ${result.incorrect_answers.map(ans => `<li>${ans.question} - Your Answer: ${ans.selected_option}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        window.onload = function() {
+            loadQuestions();
+            startTimer();
+        };
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>Full Stack Web Development</h1>
+        <div id="timer" class="timer">Time Left: 20:00</div>
+    </div>
+    <div class="container">
+        <div class="question-section">
+            <form id="exam-form">
+                {% csrf_token %}
+                <div id="questions-container"></div>
+                <div class="footer">
+                    <button type="button" class="btn" onclick="submitExam()">Submit Exam</button>
+                </div>
+            </form>
+        </div>
+        <div class="question-navigation">
+            <h3>Navigation</h3>
+            <div id="navigation-buttons" class="navigation-buttons"></div>
+        </div>
+    </div>
+
+    <div id="result-section" class="result-section"></div>
+</body>
+</html>

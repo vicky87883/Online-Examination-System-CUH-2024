@@ -2,7 +2,7 @@
 from tkinter.font import names
 from django.urls import path
 from . import views
-
+from .views import QuestionAPI, UserExamSessionAPI
 urlpatterns = [
     path('', views.signup, name='home'),
     path('index',views.index,name='index'),
@@ -40,4 +40,10 @@ urlpatterns = [
     path('login', views.user_login, name='login'),
     path('logout', views.user_logout, name='logout'),
     path('home', views.home, name='home'),
+ path('instructions/', views.instructions_view, name='instructions'),
+ path('exam/', views.exam_view, name='exam'),  # Add this line
+     path('api/questions/', QuestionAPI.as_view(), name='questions_api'),
+    path('api/user_exam_sessions/', UserExamSessionAPI.as_view(), name='user_exam_session_api'),
+     path('api/submit_exam/', views.submit_exam, name='submit_exam'),
+       path('exam_result/', views.exam_result, name='exam_result'),
 ]
