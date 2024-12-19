@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Title -->
-    <title> Exampro Learning Dashboard HTML Template</title>
+    <title> Exampro Sign In Page</title>
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'assets/images/logo/favicon.png'%}">
     <!-- Bootstrap -->
@@ -59,6 +59,19 @@
                 
                 <form action="#" method="post">
                     {% csrf_token %}
+                    <div class="mb-24">
+                        <label for="first_name" class="form-label mb-8 h6">Student or Teacher</label>
+                        <div class="position-relative">
+                            <select class="form-control py-11 ps-40" id="first_name" name="first_name" required>
+                                <option value="" disabled selected>Select your designation</option>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                            <span class="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex">
+                                <i class="ph ph-user"></i>
+                            </span>
+                        </div>
+                    </div>
                     <div class="mb-24">
                         <label for="fname" class="form-label mb-8 h6">Email or Username</label>
                         <div class="position-relative">

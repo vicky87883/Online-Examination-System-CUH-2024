@@ -2,6 +2,15 @@ from rest_framework import serializers
 from .models import Question, UserExamSession
 from rest_framework import serializers
 from .models import Question
+from .models import Students
+from .models import APIKeys
+from .models import UploadedFile
+from .models import ExamResult
+
+class APIKeysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = APIKeys
+        fields = '__all__'
 
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +28,18 @@ class UserExamSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserExamSession
         fields = ['id', 'user', 'question', 'selected_option', 'is_marked_for_review']
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Students
+        fields = '__all__'
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedFile
+        fields = '__all__'
+        
+class ExamResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExamResult
+        fields = ['id', 'user', 'exam_name', 'score', 'total_questions', 'correct_answers', 'created_at']

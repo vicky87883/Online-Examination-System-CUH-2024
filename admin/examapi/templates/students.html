@@ -47,7 +47,7 @@
 
     <!-- ============================ Sidebar Start ============================ -->
 
-    {% include 'aside.html' %}
+    {% include 'aside2.html' %}
   
 <!-- ============================ Sidebar End  ============================ -->
 
@@ -62,7 +62,7 @@
                 <!-- Breadcrumb Start -->
 <div class="breadcrumb mb-24">
     <ul class="flex-align gap-4">
-        <li><a href="index" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
+        <li><a href="index-3" class="text-gray-200 fw-normal text-15 hover-text-main-600">Home</a></li>
         <li> <span class="text-gray-500 fw-normal d-flex"><i class="ph ph-caret-right"></i></span> </li>
         <li><span class="text-main-600 fw-normal text-15">Students</span></li>
     </ul>
@@ -111,38 +111,8 @@
                                 <th class="h6 text-gray-300">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="fixed-width">
-                                    <div class="form-check">
-                                        <input class="form-check-input border-gray-200 rounded-4" type="checkbox">
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="flex-align gap-8">
-                                        <img src="{% static 'assets/images/thumbs/student-img1.png'%}" alt="" class="w-40 h-40 rounded-circle">
-                                        <span class="h6 mb-0 fw-medium text-gray-300">Jane Cooper</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">example10mail.com</span>
-                                </td>
-                                <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">12</span>
-                                </td>
-                                <td>
-                                    <span class="h6 mb-0 fw-medium text-gray-300">10</span>
-                                </td>
-                                <td>
-                                    <span class="text-13 py-2 px-8 bg-warning-50 text-warning-600 d-inline-flex align-items-center gap-8 rounded-pill">
-                                        <span class="w-6 h-6 bg-warning-600 rounded-circle flex-shrink-0"></span>
-                                        In Progress
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="#" class="bg-main-50 text-main-600 py-2 px-14 rounded-pill hover-bg-main-600 hover-text-white">View More</a>
-                                </td>
-                            </tr>
+                        <tbody id="assignmentTableBody">
+                            
                             
                         </tbody>
                     </table>
@@ -227,8 +197,8 @@
             // Get the table rows
             table.querySelectorAll('tbody tr').forEach(tr => {
                 const row = {};
-                tr.querySelectorAll('td').forEach((td, index) => {
-                    row[headers[index]] = td.innerText.trim();
+                tr.querySelectorAll('td').forEach((td, index-3) => {
+                    row[headers[index-3]] = td.innerText.trim();
                 });
                 data.push(row);
             });
@@ -277,10 +247,62 @@
             info: false,   // Bottom Left Text => Showing 1 to 10 of 12 entries
             paging: false, // Pagination False
             "columnDefs": [
-                { "orderable": false, "targets": [0, 6] } // Disables sorting on the 7th column (index 6)
+                { "orderable": false, "targets": [0, 6] } // Disables sorting on the 7th column (index-3 6)
             ]
         });
     </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const exportOptions = document.getElementById('exportOptions');
+        const assignmentTableBody = document.getElementById('assignmentTableBody');
+        
+        // Fetch the assignment data from the API
+        fetch('http://127.0.0.1:8000/studentapi/')  // Update with the correct API endpoint
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                          <td class=fixed-width>
+                                <div class=form-check>
+                                    <input class="form-check-input border-gray-200 rounded-4" type=checkbox>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex-align gap-8">
+                                    <img src="{% static 'assets/images/thumbs/student-img1.png' %}" alt class="w-40 h-40 rounded-circle">
+                                    <span class="h6 mb-0 fw-medium text-gray-300">${ item.students }</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="h6 mb-0 fw-medium text-gray-300">${ item.emailid }</span>
+                            </td>
+                            <td>
+                                <span class="h6 mb-0 fw-medium text-gray-300">${ item.courses }</span>
+                            </td>
+                            <td>
+                                <span class="h6 mb-0 fw-medium text-gray-300">${ item.certificate }</span>
+                            </td>
+                            <td>
+                                <span
+                                    class="text-13 py-2 px-8 bg-teal-50 text-teal-600 d-inline-flex align-items-center gap-8 rounded-pill">
+                                    <span class="w-6 h-6 bg-teal-600 rounded-circle flex-shrink-0"></span>
+                                    ${ item.status }
+                                </span>
+                            </td>
+                            <td>
+                                <a href=#
+                                    class="bg-main-50 text-main-600 py-2 px-14 rounded-pill hover-bg-main-600 hover-text-white">View
+                                    More</a>
+                            </td>
+                    `;
+                    
+                    assignmentTableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching assignments:', error));
+    });
+</script>
     </body>
 </html>

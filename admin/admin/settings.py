@@ -141,8 +141,9 @@ USE_TZ = True
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent  # Typically already defined
-STATIC_URL = '/static/'
-
+STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional: where your static files live during development
 
 STATIC_ROOT = BASE_DIR / "staticfiles"  # This can be any directory of your choice

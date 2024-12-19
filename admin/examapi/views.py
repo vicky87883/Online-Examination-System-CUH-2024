@@ -26,20 +26,35 @@ from rest_framework.response import Response as DRFResponse
 from rest_framework import status
 from django.contrib.auth.models import User
 from .models import Question, UserExamSession
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json  # Add this import at the top of your views.py file
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
-from django.http import JsonResponse
+from rest_framework.response import Response
+from .models import Students
+from .serializers import StudentSerializer
+from .models import APIKeys
+from .serializers import APIKeysSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+from .models import UploadedFile
+from .serializers import UploadedFileSerializer
+from .models import UploadedFile
+from .models import ExamResult, UserExamSession
+from .serializers import ExamResultSerializer
+
+import logging
+logger = logging.getLogger(__name__)
 def register(request):
     if request.method == "POST":
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
+        first_name = request.POST['first_name']
         confirm_password = request.POST['confirm_password']
 
         if password != confirm_password:
@@ -54,24 +69,34 @@ def register(request):
             messages.error(request, "Email already registered!")
             return redirect('register')
 
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(username=username, email=email, password=password,first_name=first_name)
         user.save()
         messages.success(request, "Registration successful! You can now log in.")
         return redirect('login')
     return render(request, 'sign-up.html')
+
 def user_login(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        first_name = request.POST.get('first_name')  # Use get to avoid KeyError
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)
-            return redirect('home')
+            if first_name == "student":
+                login(request, user)
+                return redirect('home')  # Render 'home' for students
+            elif first_name == "teacher":
+                login(request, user)
+                return redirect('index-3')  # Render 'home2' for teachers
+            else:
+                messages.error(request, "Invalid designation!")
+                return redirect('login')
         else:
             messages.error(request, "Invalid username or password!")
             return redirect('login')
+
     return render(request, 'sign-in.html')
 
 
@@ -86,18 +111,9 @@ def home(request):
 def analytics(request):
     return render(request, 'analytics.html')
 def assignment(request):
-    # Fetch data from the API
-    api_url = "http://127.0.0.1:8000/api/apikeys/"
-    response = requests.get(api_url)
-    
-    # Parse the JSON response
-    if response.status_code == 200:
-        api_data = response.json()
-    else:
-        api_data = {"error": "Could not fetch data"}
-    
     # Pass data to the template
-    return render(request, 'assignment.html', {'api_data': api_data})
+    return render(request, 'assignment.html')
+
 def coursedetails(request):
     return render(request,'course-details.html')
 def createcourse(request):
@@ -138,7 +154,20 @@ def starred(request):
 def studentcourses(request):
     return render(request,'student-courses.html')
 def students(request):
-    return render(request,'students.html')
+    
+    api_url = "http://127.0.0.1:8000/studentapi/"
+    try:
+        response = requests.get(api_url)
+        logger.info(f"API Response: {response.status_code}")
+        if response.status_code == 200:
+            student_data = response.json()
+            logger.info(f"Fetched API Data: {student_data}")
+        else:
+          student_data = {"error": "Could not fetch data"}
+    except Exception as e:
+        logger.error(f"Error fetching API data: {e}")
+        student_data = {"error": "Could not fetch data"}
+    return render(request, 'students.html', {'student_data': student_data})
 def twostepverification(request):
     return render(request,'two-step-verification.html')
 def uploadvideos(request):
@@ -274,3 +303,31 @@ def exam_result(request):
         return render(request, 'error.html', {'message': 'No result found. Please attempt the exam again.'})
     
     return render(request, 'result.html', {'result': result})
+
+
+class StudentsListView(APIView):
+    # Get all records
+    def get(self, request):
+        keys = Students.objects.all()
+        serializer = StudentSerializer(keys, many=True)
+        return Response(serializer.data)
+
+    # Create a new record
+    def post(self, request):
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def file_upload_view(request):
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        image = request.FILES.get('image')
+        if file:
+            UploadedFile.objects.create(file=file, image=image)
+        return redirect('file-upload')
+    files = UploadedFile.objects.all()
+    return render(request, 'resources.html', {'files': files})
+

@@ -3,111 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam</title>
+    <title>Exam Portal</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
+            background-color: #f4f7fc;
+            color: #333;
         }
+
         .header {
-            background-color: #007bff;
+            background-color: #0056b3;
             color: white;
-            padding: 10px 20px;
+            padding: 20px;
             text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             position: relative;
         }
+
         .timer {
             position: absolute;
-            top: 10px;
-            right: 20px;
+            top: 20px;
+            right: 30px;
             font-size: 16px;
-            background: #343a40;
+            background: #023e8a;
             color: #ffffff;
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 5px;
         }
+
         .container {
             display: flex;
             flex-direction: row;
             margin: 20px;
+            gap: 20px;
         }
+
         .question-section {
             flex: 3;
             padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+
         .question-navigation {
             flex: 1;
-            margin-left: 20px;
             padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+
         .question-container {
             margin-bottom: 20px;
         }
+
         .question-container p {
             font-size: 16px;
             font-weight: bold;
         }
+
         .options label {
             display: block;
-            margin: 5px 0;
+            margin: 10px 0;
+            font-size: 14px;
+            cursor: pointer;
         }
+
         .controls {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
             margin-top: 10px;
         }
+
         .btn {
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .btn:hover {
+            padding: 10px 15px;
             background-color: #0056b3;
-        }
-        .navigation-buttons button {
-            margin: 5px;
-            padding: 10px;
-            width: 40px;
-            background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 14px;
         }
+
+        .btn:hover {
+            background-color: #023e8a;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .navigation-buttons button {
+            width: 40px;
+            height: 40px;
+            background-color: #e0f7fa;
+            color: #0056b3;
+            border: 1px solid #a2d9e0;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navigation-buttons button:hover,
         .navigation-buttons button.active {
-            background-color: #007bff;
+            background-color: #0056b3;
+            color: white;
         }
-        .navigation-buttons button:hover {
-            background-color: #5a6268;
+
+        .navigation-buttons button.reviewed {
+            background-color: #ffcc00;
+            color: white;
+            border: none;
         }
+
         .footer {
             text-align: center;
             margin-top: 20px;
         }
+
         .result-section {
             padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
         }
+
         .result-section h3 {
             margin-bottom: 10px;
         }
     </style>
     <script>
         let timerDuration = 20 * 60; // 20 minutes in seconds
+        const reviewedQuestions = new Set(); // Keeps track of marked questions
 
         function startTimer() {
             const timerElement = document.getElementById("timer");
@@ -135,7 +171,7 @@
                 // Add question to main container
                 container.innerHTML += `
                     <div id="question-${q.id}" class="question-container">
-                        <p>Question No. ${questionNumber}: ${q.text}</p>
+                        <p>Question ${questionNumber}: ${q.text}</p>
                         <div class="options">
                             <label><input type="radio" name="q${q.id}" value="1"> ${q.option1}</label>
                             <label><input type="radio" name="q${q.id}" value="2"> ${q.option2}</label>
@@ -157,86 +193,48 @@
             });
         }
 
+        function markForReview(questionId) {
+            const questionButton = document.getElementById(`nav-btn-${questionId}`);
+            if (reviewedQuestions.has(questionId)) {
+                reviewedQuestions.delete(questionId);
+                questionButton.classList.remove('reviewed'); // Remove reviewed style
+            } else {
+                reviewedQuestions.add(questionId);
+                questionButton.classList.add('reviewed'); // Add reviewed style
+            }
+        }
+
         function navigateTo(questionId) {
             document.getElementById(`question-${questionId}`).scrollIntoView({ behavior: "smooth" });
             document.querySelectorAll('.navigation-buttons button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`nav-btn-${questionId}`).classList.add('active');
         }
 
-        function markForReview(questionId) {
-            submitAnswer(questionId, null, true);
-            alert('Question marked for review');
-        }
+        async function submitExam() {
+            const answers = [];
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                const questionId = input.name.replace('q', '');
+                if (!reviewedQuestions.has(parseInt(questionId))) { // Skip reviewed questions
+                    const selectedOption = input.value;
+                    answers.push({ question_id: questionId, selected_option: selectedOption });
+                }
+            });
 
-        function clearResponse(questionId) {
-            const options = document.getElementsByName(`q${questionId}`);
-            options.forEach(option => option.checked = false);
-            alert('Response cleared');
-        }
-
-        async function submitAnswer(questionId, selectedOption, isMarkedForReview = false) {
-            await fetch('/api/user_exam_sessions/', {
+            const response = await fetch('/api/submit_exam/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                 },
-                body: JSON.stringify({
-                    question_id: questionId,
-                    selected_option: selectedOption,
-                    is_marked_for_review: isMarkedForReview,
-                }),
+                body: JSON.stringify({ answers }),
             });
-        }
 
-        async function submitExam() {
-    const answers = [];
-
-    // Collect answers from the form
-    document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-        const questionId = input.name.replace('q', '');
-        const selectedOption = input.value;
-        answers.push({ question_id: questionId, selected_option: selectedOption });
-    });
-
-    try {
-        const response = await fetch('/api/submit_exam/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            },
-            body: JSON.stringify({ answers }),
-        });
-
-        const result = await response.json();
-        if (result.redirect_url) {
-            window.location.href = result.redirect_url; // Redirect to the results page
-        } else {
-            alert('Error submitting exam. Please try again.');
-        }
-    } catch (error) {
-        console.error('Error submitting exam:', error);
-        alert('Failed to submit the exam.');
-    }
-}
-
-        function displayResult(result) {
-            const resultSection = document.getElementById('result-section');
-            resultSection.innerHTML = `
-                <h3>Exam Results</h3>
-                <p>Correct Answers: ${result.correct_answers_count}</p>
-                <p>Incorrect Answers: ${result.incorrect_answers_count}</p>
-                <p>Total Score: ${result.score}%</p>
-                <h4>Correct Answers</h4>
-                <ul>
-                    ${result.correct_answers.map(ans => `<li>${ans.question} - Correct Answer: ${ans.correct_option}</li>`).join('')}
-                </ul>
-                <h4>Incorrect Answers</h4>
-                <ul>
-                    ${result.incorrect_answers.map(ans => `<li>${ans.question} - Your Answer: ${ans.selected_option}</li>`).join('')}
-                </ul>
-            `;
+            const result = await response.json();
+            if (result.redirect_url) {
+                window.location.href = result.redirect_url;
+            } else {
+                alert('Error submitting exam.');
+            }
         }
 
         window.onload = function() {
@@ -247,7 +245,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Full Stack Web Development</h1>
+        Full Stack Web Development Exam
         <div id="timer" class="timer">Time Left: 20:00</div>
     </div>
     <div class="container">
@@ -265,7 +263,5 @@
             <div id="navigation-buttons" class="navigation-buttons"></div>
         </div>
     </div>
-
-    <div id="result-section" class="result-section"></div>
 </body>
 </html>
