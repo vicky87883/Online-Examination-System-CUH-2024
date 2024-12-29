@@ -9,7 +9,10 @@
 <body>
     <h1>Exam Results</h1>
 
-    <table border="1" id="resultsTable" style="display: none;">
+    <div id="loading">Loading...</div>
+    <p id="noResults" style="display: none;">No results found for the current user.</p>
+    
+    <table id="resultsTable" border="1" style="display: none;">
         <thead>
             <tr>
                 <th>Student Name</th>
@@ -21,67 +24,62 @@
             </tr>
         </thead>
         <tbody id="resultsBody">
-            <!-- Results will be dynamically inserted here -->
         </tbody>
     </table>
-    <div id="noResults" style="display: none;">No results found for this user.</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // API endpoint for fetching exam results
-            const apiUrl = 'http://127.0.0.1:8000/api/examresults/'; // Replace with your API endpoint
+            // Step 1: Get the current user's ID and token
+            axios.get('/api/currentuser/', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}` // Add token if using JWT
+                }
+            })
+            .then(userResponse => {
+                const userId = userResponse.data.user_id;
 
-            // API endpoint to get the current logged-in user ID (update according to your setup)
-            const userApiUrl = 'http://127.0.0.1:8000/api/current_user/'; // Replace with the actual endpoint
+                // Step 2: Fetch exam results for the logged-in user
+                axios.get('/api/examresults/', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                .then(resultsResponse => {
+                    const results = resultsResponse.data;
+                    const tableBody = document.getElementById("resultsBody");
 
-            // Step 1: Fetch the current logged-in user's ID
-            axios.get(userApiUrl)
-                .then(userResponse => {
-                    const currentUserId = userResponse.data.id; // Assuming the API returns the user ID in `id`
+                    if (results.length > 0) {
+                        results.forEach(result => {
+                            const row = document.createElement("tr");
 
-                    // Step 2: Fetch the exam results
-                    axios.get(apiUrl)
-                        .then(response => {
-                            const results = response.data;
+                            row.innerHTML = `
+                                <td>${result.student_name}</td>
+                                <td>${result.roll_number}</td>
+                                <td>${result.subject}</td>
+                                <td>${result.marks_obtained}</td>
+                                <td>${result.total_marks}</td>
+                                <td>${result.result_date}</td>
+                            `;
 
-                            // Step 3: Filter results for the current user
-                            const userResults = results.filter(result => result.user === currentUserId);
-
-                            if (userResults.length > 0) {
-                                const tableBody = document.getElementById("resultsBody");
-
-                                // Populate the table with results for the current user
-                                userResults.forEach(result => {
-                                    const row = document.createElement("tr");
-
-                                    row.innerHTML = `
-                                        <td>${result.student_name}</td>
-                                        <td>${result.roll_number}</td>
-                                        <td>${result.subject}</td>
-                                        <td>${result.marks_obtained}</td>
-                                        <td>${result.total_marks}</td>
-                                        <td>${result.result_date}</td>
-                                    `;
-
-                                    tableBody.appendChild(row);
-                                });
-
-                                // Display the table
-                                document.getElementById("resultsTable").style.display = "table";
-                            } else {
-                                // Show "No Results" message
-                                document.getElementById("noResults").style.display = "block";
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error fetching results:", error);
-                            alert("Failed to fetch results. Please try again later.");
+                            tableBody.appendChild(row);
                         });
+
+                        document.getElementById("resultsTable").style.display = "table";
+                    } else {
+                        document.getElementById("noResults").style.display = "block";
+                    }
+
+                    document.getElementById("loading").style.display = "none";
                 })
                 .catch(error => {
-                    console.error("Error fetching user info:", error);
-                    alert("Failed to fetch user info. Please ensure you are logged in.");
+                    console.error("Error fetching results:", error);
+                    alert("Failed to fetch exam results.");
                 });
+            })
+            .catch(error => {
+                console.error("Error fetching current user:", error);
+                alert("Failed to fetch user details.");
+            });
         });
     </script>
 </body>

@@ -58,6 +58,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import logging
+from .models import ExamResult
+from .serializers import ExamResultSerializer
 logger = logging.getLogger(__name__)
 def register(request):
     if request.method == "POST":
@@ -196,7 +198,8 @@ def createquiz(request):
     return render(request,'create-quiz.html')
 def publishcourse(request):
     return render(request,'publish-course.html')
-
+def scores(request):
+    return render(request,'scores.html')
 @login_required
 def instructions_view(request):
     return render(request, 'instructions.html')
@@ -369,26 +372,24 @@ def file_upload_view(request):
     files = UploadedFile.objects.all()
     return render(request, 'resources.html', {'files': files})
 
-class ExamResultAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure user is authenticated (can change to AllowAny for testing)
+class ExamResultAPI(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        results = ExamResult.objects.all()
-        serializer = ExamResultSerializer(results, many=True)
-        return Response(serializer.data)
-    
+        current_user = request.user
+        # Filter results by current logged-in user
+        user_results = ExamResult.objects.filter(user=current_user)
+        serializer = ExamResultSerializer(user_results, many=True)
+        return Response(serializer.data)    
 
-class ExamResultListView(TemplateView):
-    template_name = 'exam_results.html'
 
-    def get(self, request, *args, **kwargs):
-        # Fetch data from API
-        api_url = 'http://127.0.0.1:8000/api/examresults/'  # Update this URL to match your setup
-        headers = {
-            'Authorization': f'Token {request.session.get("auth_token")}'  # Pass token if needed
-        }
-        response = requests.get(api_url, headers=headers)
-        results = response.json() if response.status_code == 200 else []
+class CurrentUserAPI(APIView):
+    permission_classes = [IsAuthenticated]
 
-        # Pass data to the template
-        return render(request, self.template_name, {'results': results})
+    def get(self, request):
+        user = request.user
+        return Response({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+        })

@@ -56,7 +56,6 @@ class ExamResult(models.Model):
     correct_answers = models.IntegerField(null=True)
     wrong_answers = models.IntegerField(null=True)
     score_percentage = models.FloatField(null=True)
-
     def __str__(self):
         return f"{self.user.username} - {self.score_percentage}%"
     
