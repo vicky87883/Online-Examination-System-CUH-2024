@@ -43,10 +43,20 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from .models import UploadedFile
 from .serializers import UploadedFileSerializer
-from .models import UploadedFile
-from .models import ExamResult, UserExamSession
-from .serializers import ExamResultSerializer
+from django.contrib.auth.decorators import login_required
+from .models import ExamResult
+from django.views.generic import TemplateView
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+from .models import ExamResult
+from .serializers import ExamResultSerializer
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
 import logging
 logger = logging.getLogger(__name__)
 def register(request):
@@ -257,44 +267,72 @@ class UserExamSessionAPI(APIView):
             'session': UserExamSessionSerializer(session).data,
         }, status=status.HTTP_201_CREATED)
     
+logger = logging.getLogger(__name__)
+
+@login_required
 def submit_exam(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            
+            # Validate input structure
+            if not isinstance(data.get('answers'), list):
+                logger.error("Invalid 'answers' format in request data.")
+                return JsonResponse({'error': "'answers' must be a list"}, status=400)
+            
             correct_answers = 0
             wrong_answers = 0
 
-            for question in data.get('answers', []):
+            for question in data['answers']:
                 question_id = question.get('question_id')
                 selected_option = question.get('selected_option')
 
-                # Fetch the correct answer for the question from the database
+                if not question_id or selected_option is None:
+                    logger.error(f"Missing 'question_id' or 'selected_option' in: {question}")
+                    return JsonResponse({'error': 'Each answer must include question_id and selected_option'}, status=400)
+
                 try:
                     question_obj = Question.objects.get(id=question_id)
-                    correct_answer = question_obj.correct_option  # Ensure this field exists in your model
+                    correct_answer = question_obj.correct_option
                 except Question.DoesNotExist:
+                    logger.error(f"Question with ID {question_id} does not exist.")
                     return JsonResponse({'error': f'Question with ID {question_id} does not exist.'}, status=400)
 
-                # Validate the selected answer
-                if str(selected_option) == str(correct_answer):  # Compare as strings to avoid type mismatch
+                # Validate answer
+                if str(selected_option) == str(correct_answer):
                     correct_answers += 1
                 else:
                     wrong_answers += 1
 
-            # Save the result in the session
+            total_questions = len(data['answers'])
+            score_percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
+
+            # Save to ExamResult model
+            exam_result = ExamResult.objects.create(
+                 user=request.user,  # Use the logged-in user
+                 total_questions=total_questions,
+                 correct_answers=correct_answers,
+                 wrong_answers=wrong_answers,
+                 score_percentage=score_percentage)
+            exam_result.save()
+
+            # Save result in session
             request.session['exam_result'] = {
                 'correct_answers': correct_answers,
                 'wrong_answers': wrong_answers,
-                'total_questions': len(data.get('answers', [])),
+                'total_questions': total_questions,
+                'score_percentage': score_percentage
             }
 
-            # Redirect to the results page
             return JsonResponse({'redirect_url': '/exam_result/'})
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {str(e)}")
+            return JsonResponse({'error': 'Invalid JSON payload'}, status=400)
         except Exception as e:
+            logger.error(f"Unexpected error: {str(e)}")
             return JsonResponse({'error': str(e)}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-
 def exam_result(request):
     # Retrieve the result data from the session
     result = request.session.get('exam_result', {})
@@ -331,3 +369,26 @@ def file_upload_view(request):
     files = UploadedFile.objects.all()
     return render(request, 'resources.html', {'files': files})
 
+class ExamResultAPIView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated (can change to AllowAny for testing)
+
+    def get(self, request):
+        results = ExamResult.objects.all()
+        serializer = ExamResultSerializer(results, many=True)
+        return Response(serializer.data)
+    
+
+class ExamResultListView(TemplateView):
+    template_name = 'exam_results.html'
+
+    def get(self, request, *args, **kwargs):
+        # Fetch data from API
+        api_url = 'http://127.0.0.1:8000/api/examresults/'  # Update this URL to match your setup
+        headers = {
+            'Authorization': f'Token {request.session.get("auth_token")}'  # Pass token if needed
+        }
+        response = requests.get(api_url, headers=headers)
+        results = response.json() if response.status_code == 200 else []
+
+        # Pass data to the template
+        return render(request, self.template_name, {'results': results})

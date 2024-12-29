@@ -6,10 +6,9 @@ from .views import QuestionAPI, UserExamSessionAPI, StudentsListView
 from .views import students
 from django.urls import path
 from .views import file_upload_view
-
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .views import ExamResultAPIView, ExamResultListView
 urlpatterns = [
     path('', views.signup, name='home'),
     path('index',views.index,name='index'),
@@ -49,12 +48,14 @@ urlpatterns = [
     path('home', views.home, name='home'),
     path('instructions/', views.instructions_view, name='instructions'),
     path('exam', views.exam_view, name='exam'),  # Add this line
-     path('api/questions/', QuestionAPI.as_view(), name='questions_api'),
+    path('api/questions/', QuestionAPI.as_view(), name='questions_api'),
     path('api/user_exam_sessions/', UserExamSessionAPI.as_view(), name='user_exam_session_api'),
-     path('api/submit_exam/', views.submit_exam, name='submit_exam'),
-       path('exam_result/', views.exam_result, name='exam_result'),
-       path('studentapi/', StudentsListView.as_view(), name='studentapi'),
-        path('files', file_upload_view, name='file-upload'),
+    path('api/submit_exam/', views.submit_exam, name='submit_exam'),
+    path('exam_result/', views.exam_result, name='exam_result'),
+    path('studentapi/', StudentsListView.as_view(), name='studentapi'),
+    path('files', file_upload_view, name='file-upload'),
+     path('api/examresults/', ExamResultAPIView.as_view(), name='examresults-api'),
+    path('examresults/', ExamResultListView.as_view(), name='examresults-list'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -19,6 +19,7 @@
             padding: 20px;
             border: 1px solid #dee2e6;
             border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         h1 {
             color: #007bff;
@@ -30,17 +31,47 @@
         .stats div {
             margin: 10px 0;
         }
+        .error {
+            font-size: 18px;
+            color: #dc3545;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
+    <script>
+        // Redirect to the home page after 5 seconds
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 5000);
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Exam Results</h1>
-        <div class="stats">
-            <div><strong>Total Questions:</strong> {{ result.total_questions }}</div>
-            <div><strong>Correct Answers:</strong> {{ result.correct_answers }}</div>
-            <div><strong>Wrong Answers:</strong> {{ result.wrong_answers }}</div>
-        </div>
-        <button onclick="window.location.href='/'" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Go to Home</button>
+        {% if result %}
+            <div class="stats">
+                <div><strong>Total Questions:</strong> {{ result.total_questions }}</div>
+                <div><strong>Correct Answers:</strong> {{ result.correct_answers }}</div>
+                <div><strong>Wrong Answers:</strong> {{ result.wrong_answers }}</div>
+                <div><strong>Score Percentage:</strong> {{ result.score_percentage }}%</div>
+            </div>
+        {% else %}
+            <div class="error">
+                No results found. Please attempt the exam again.
+            </div>
+        {% endif %}
+        <button onclick="window.location.href='/'">Go to Home</button>
     </div>
 </body>
 </html>

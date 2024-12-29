@@ -51,12 +51,12 @@ class UploadedFile(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class ExamResult(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    exam_name = models.CharField(max_length=255, default="Online Exam")
-    score = models.FloatField()
-    total_questions = models.IntegerField()
-    correct_answers = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Use a foreign key to the User model
+    total_questions = models.IntegerField(null=True)
+    correct_answers = models.IntegerField(null=True)
+    wrong_answers = models.IntegerField(null=True)
+    score_percentage = models.FloatField(null=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.exam_name}"
+        return f"{self.user.username} - {self.score_percentage}%"
+    

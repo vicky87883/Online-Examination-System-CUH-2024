@@ -42,4 +42,4 @@ class UploadedFileSerializer(serializers.ModelSerializer):
 class ExamResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamResult
-        fields = ['id', 'user', 'exam_name', 'score', 'total_questions', 'correct_answers', 'created_at']
+        fields = '__all__'
