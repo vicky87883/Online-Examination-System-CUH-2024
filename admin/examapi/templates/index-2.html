@@ -54,32 +54,134 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card mt-24 overflow-hidden">
-                        <div class=card-header>
-                            <div class="mb-0 flex-between flex-wrap gap-8">
-                                <h4 class=mb-0>Hour Spent</h4>
-                                <div class="flex-align gap-16 flex-wrap">
-                                    <div class="flex-align flex-wrap gap-16">
-                                        <div class="flex-align flex-wrap gap-8">
-                                            <span class="w-8 h-8 rounded-circle bg-main-two-600"></span>
-                                            <span class="text-13 text-gray-600">Study</span>
-                                        </div>
-                                        <div class="flex-align flex-wrap gap-8">
-                                            <span class="w-8 h-8 rounded-circle bg-main-two-200"></span>
-                                            <span class="text-13 text-gray-600">Exam</span>
+                    <div class="mt-24">
+                        <div class="row gy-4">
+        
+                            
+                            
+                            <div class="col-xxl-4 col-sm-6">
+                                <!-- Progress Bar Start -->
+                                <div class="card h-100">
+                                    <div class="card-header border-bottom border-gray-100 flex-between flex-wrap gap-8">
+                                        <h5 class="mb-0">Progress Statistics</h5>
+                                        <div class="dropdown flex-shrink-0">
+                                            <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="ph-fill ph-dots-three-outline"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu--md border-0 bg-transparent p-0">
+                                                <div class="card border border-gray-100 rounded-12 box-shadow-custom">
+                                                    <div class="card-body p-12">
+                                                        <div class="max-h-200 overflow-y-auto scroll-sm pe-8">
+                                                            <ul>
+                                                                <li class="mb-0">
+                                                                    <a href="students.html" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                                        <span class="text"> <i class="ph ph-user me-4"></i> View</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <select class="form-select form-control text-13 px-8 pe-24 py-8 rounded-8 w-auto">
-                                        <option value=1>Yearly</option>
-                                        <option value=1>Monthly</option>
-                                        <option value=1>Weekly</option>
-                                        <option value=1>Today</option>
-                                    </select>
+                                    <div class="card-body">
+            
+                                       <div class="">
+                                            <span class="text-gray-200 text-lg mb-12 mt-10 d-block text-center">Total activity</span>
+                                            <h1 class="text-48 fw-medium mb-12 text-center"> 65.2%</h1>
+                                            <div class="flex-between flex-wrap">
+                                                <div class="d-flex gap-8 mt-12 flex-column w-50-perc pe-8">
+                                                    <div class="progress w-100 bg-main-100 rounded-pill h-4" role="progressbar" aria-label="Basic example" aria-valuenow="32" aria-valuemin="0" aria-valuemax="100">
+                                                        <div class="progress-bar bg-main-600 rounded-pill" style="width: 32%"></div>
+                                                    </div>
+                                                    <span class="text-neutral-600 flex-shrink-0 text-13 fw-medium">32%</span>
+                                                </div>
+                                                <div class="d-flex gap-8 mt-12 flex-column w-50-perc ps-8">
+                                                    <div class="progress w-100 bg-main-two-100 rounded-pill h-4" role="progressbar" aria-label="Basic example" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">
+                                                        <div class="progress-bar bg-main-two-600 rounded-pill" style="width: 80%"></div>
+                                                    </div>
+                                                    <span class="text-neutral-600 flex-shrink-0 text-13 fw-medium">80%</span>
+                                                </div>
+                                            </div>
+            
+                                            <!-- Progress Card Start -->
+                                            <div class="mt-20">
+                                                <div class="bg-primary-50 rounded-16 p-12 flex-between flex-wrap gap-8 mb-16">
+                                                    <div class="flex-align gap-16">  
+                                                        <span class="w-48 h-48 rounded-8 flex-center text-xl bg-primary-600 text-white"><i class="ph ph-calendar-dots"></i></span>
+                                                        <h2 class="mb-0 fw-medium text-primary-600">25</h2>
+                                                    </div>
+                                                    <span class="px-16 py-4 rounded-pill bg-white border border-primary-600 text-primary-600 fw-medium">In Progress</span>
+                                                </div>
+                                                <div class="bg-success-50 rounded-16 p-12 flex-between flex-wrap gap-8 mb-0">
+                                                    <div class="flex-align gap-16">  
+                                                        <span class="w-48 h-48 rounded-8 flex-center text-xl bg-success-600 text-white"><i class="ph ph-calendar-dots"></i></span>
+                                                        <h2 class="mb-0 fw-medium text-success-600">12</h2>
+                                                    </div>
+                                                    <span class="px-16 py-4 rounded-pill bg-white border border-success-600 text-success-600 fw-medium">Completed</span>
+                                                </div>
+                                            </div>
+                                            <!-- Progress Card End -->
+                                       </div>
+                                    </div>
                                 </div>
+                                <!-- Progress bar end -->
                             </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div id=stackedColumnChart></div>
+            
+                            <div class="col-xxl-4 col-sm-6">
+                                <!-- Donut Chart Start -->
+                                <div class="card h-100">
+                                    <div class="card-header border-bottom border-gray-100 flex-between gap-8 flex-wrap">
+                                        <h5 class="mb-0">Most Activity</h5>
+                                        <div class="dropdown flex-shrink-0">
+                                            <button class="text-gray-400 text-xl d-flex rounded-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="ph-fill ph-dots-three-outline"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu--md border-0 bg-transparent p-0">
+                                                <div class="card border border-gray-100 rounded-12 box-shadow-custom">
+                                                    <div class="card-body p-12">
+                                                        <div class="max-h-200 overflow-y-auto scroll-sm pe-8">
+                                                            <ul>
+                                                                <li class="mb-0">
+                                                                    <a href="students.html" class="py-6 text-15 px-8 hover-bg-gray-50 text-gray-300 w-100 rounded-8 fw-normal text-xs d-block text-start">
+                                                                        <span class="text"> <i class="ph ph-user me-4"></i> View</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="flex-center mb-20">
+                                            <div id="activityDonutChart" class="w-auto d-inline-block" style="min-height: 248.7px;"><div id="apexcharts0mijwepgh" class="apexcharts-canvas apexcharts0mijwepgh apexcharts-theme-light" style="width: 263px; height: 248.7px;"><svg id="SvgjsSvg1626" width="263" height="248.70000000000002" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" class="apexcharts-svg" xmlns:data="ApexChartsNS" transform="translate(0, 0)" style="background: transparent;"><foreignObject x="0" y="0" width="263" height="248.70000000000002"><div class="apexcharts-legend" xmlns="http://www.w3.org/1999/xhtml"></div></foreignObject><g id="SvgjsG1628" class="apexcharts-inner apexcharts-graphical" transform="translate(9.5, 0)"><defs id="SvgjsDefs1627"><clipPath id="gridRectMask0mijwepgh"><rect id="SvgjsRect1629" width="252" height="270" x="-3" y="-1" rx="0" ry="0" opacity="1" stroke-width="0" stroke="none" stroke-dasharray="0" fill="#fff"></rect></clipPath><clipPath id="forecastMask0mijwepgh"></clipPath><clipPath id="nonForecastMask0mijwepgh"></clipPath><clipPath id="gridRectMarkerMask0mijwepgh"><rect id="SvgjsRect1630" width="250" height="272" x="-2" y="-2" rx="0" ry="0" opacity="1" stroke-width="0" stroke="none" stroke-dasharray="0" fill="#fff"></rect></clipPath><filter id="SvgjsFilter1639" filterUnits="userSpaceOnUse" width="200%" height="200%" x="-50%" y="-50%"><feFlood id="SvgjsFeFlood1640" flood-color="#000000" flood-opacity="0.45" result="SvgjsFeFlood1640Out" in="SourceGraphic"></feFlood><feComposite id="SvgjsFeComposite1641" in="SvgjsFeFlood1640Out" in2="SourceAlpha" operator="in" result="SvgjsFeComposite1641Out"></feComposite><feOffset id="SvgjsFeOffset1642" dx="1" dy="1" result="SvgjsFeOffset1642Out" in="SvgjsFeComposite1641Out"></feOffset><feGaussianBlur id="SvgjsFeGaussianBlur1643" stdDeviation="1 " result="SvgjsFeGaussianBlur1643Out" in="SvgjsFeOffset1642Out"></feGaussianBlur><feMerge id="SvgjsFeMerge1644" result="SvgjsFeMerge1644Out" in="SourceGraphic"><feMergeNode id="SvgjsFeMergeNode1645" in="SvgjsFeGaussianBlur1643Out"></feMergeNode><feMergeNode id="SvgjsFeMergeNode1646" in="[object Arguments]"></feMergeNode></feMerge><feBlend id="SvgjsFeBlend1647" in="SourceGraphic" in2="SvgjsFeMerge1644Out" mode="normal" result="SvgjsFeBlend1647Out"></feBlend></filter><filter id="SvgjsFilter1652" filterUnits="userSpaceOnUse" width="200%" height="200%" x="-50%" y="-50%"><feFlood id="SvgjsFeFlood1653" flood-color="#000000" flood-opacity="0.45" result="SvgjsFeFlood1653Out" in="SourceGraphic"></feFlood><feComposite id="SvgjsFeComposite1654" in="SvgjsFeFlood1653Out" in2="SourceAlpha" operator="in" result="SvgjsFeComposite1654Out"></feComposite><feOffset id="SvgjsFeOffset1655" dx="1" dy="1" result="SvgjsFeOffset1655Out" in="SvgjsFeComposite1654Out"></feOffset><feGaussianBlur id="SvgjsFeGaussianBlur1656" stdDeviation="1 " result="SvgjsFeGaussianBlur1656Out" in="SvgjsFeOffset1655Out"></feGaussianBlur><feMerge id="SvgjsFeMerge1657" result="SvgjsFeMerge1657Out" in="SourceGraphic"><feMergeNode id="SvgjsFeMergeNode1658" in="SvgjsFeGaussianBlur1656Out"></feMergeNode><feMergeNode id="SvgjsFeMergeNode1659" in="[object Arguments]"></feMergeNode></feMerge><feBlend id="SvgjsFeBlend1660" in="SourceGraphic" in2="SvgjsFeMerge1657Out" mode="normal" result="SvgjsFeBlend1660Out"></feBlend></filter><filter id="SvgjsFilter1665" filterUnits="userSpaceOnUse" width="200%" height="200%" x="-50%" y="-50%"><feFlood id="SvgjsFeFlood1666" flood-color="#000000" flood-opacity="0.45" result="SvgjsFeFlood1666Out" in="SourceGraphic"></feFlood><feComposite id="SvgjsFeComposite1667" in="SvgjsFeFlood1666Out" in2="SourceAlpha" operator="in" result="SvgjsFeComposite1667Out"></feComposite><feOffset id="SvgjsFeOffset1668" dx="1" dy="1" result="SvgjsFeOffset1668Out" in="SvgjsFeComposite1667Out"></feOffset><feGaussianBlur id="SvgjsFeGaussianBlur1669" stdDeviation="1 " result="SvgjsFeGaussianBlur1669Out" in="SvgjsFeOffset1668Out"></feGaussianBlur><feMerge id="SvgjsFeMerge1670" result="SvgjsFeMerge1670Out" in="SourceGraphic"><feMergeNode id="SvgjsFeMergeNode1671" in="SvgjsFeGaussianBlur1669Out"></feMergeNode><feMergeNode id="SvgjsFeMergeNode1672" in="[object Arguments]"></feMergeNode></feMerge><feBlend id="SvgjsFeBlend1673" in="SourceGraphic" in2="SvgjsFeMerge1670Out" mode="normal" result="SvgjsFeBlend1673Out"></feBlend></filter></defs><g id="SvgjsG1631" class="apexcharts-pie"><g id="SvgjsG1632" transform="translate(0, 0) scale(1)"><circle id="SvgjsCircle1633" r="62.70000000000001" cx="123" cy="123" fill="transparent"></circle><g id="SvgjsG1634" class="apexcharts-slices"><g id="SvgjsG1635" class="apexcharts-series apexcharts-pie-series" seriesName="series-1" rel="1" data:realIndex="0"><path id="SvgjsPath1636" d="M 123 8.999999999999986 A 114.00000000000001 114.00000000000001 0 1 1 29.937325418241016 188.84328819013854 L 71.81552898003255 159.21380850457618 A 62.70000000000001 62.70000000000001 0 1 0 123 60.29999999999999 L 123 8.999999999999986 z" fill="rgba(61,127,249,1)" fill-opacity="1" stroke-opacity="1" stroke-linecap="butt" stroke-width="2" stroke-dasharray="0" class="apexcharts-pie-area apexcharts-donut-slice-0" index="0" j="0" data:angle="234.72" data:startAngle="0" data:strokeWidth="2" data:value="65.2" data:pathOrig="M 123 8.999999999999986 A 114.00000000000001 114.00000000000001 0 1 1 29.937325418241016 188.84328819013854 L 71.81552898003255 159.21380850457618 A 62.70000000000001 62.70000000000001 0 1 0 123 60.29999999999999 L 123 8.999999999999986 z" stroke="#ffffff"></path></g><g id="SvgjsG1648" class="apexcharts-series apexcharts-pie-series" seriesName="series-2" rel="2" data:realIndex="1"><path id="SvgjsPath1649" d="M 29.937325418241016 188.84328819013854 A 114.00000000000001 114.00000000000001 0 0 1 57.15671180986156 29.937325418240974 L 86.78619149542385 71.81552898003252 A 62.70000000000001 62.70000000000001 0 0 0 71.81552898003255 159.21380850457618 L 29.937325418241016 188.84328819013854 z" fill="rgba(39,207,167,1)" fill-opacity="1" stroke-opacity="1" stroke-linecap="butt" stroke-width="2" stroke-dasharray="0" class="apexcharts-pie-area apexcharts-donut-slice-1" index="0" j="1" data:angle="90.00000000000003" data:startAngle="234.72" data:strokeWidth="2" data:value="25" data:pathOrig="M 29.937325418241016 188.84328819013854 A 114.00000000000001 114.00000000000001 0 0 1 57.15671180986156 29.937325418240974 L 86.78619149542385 71.81552898003252 A 62.70000000000001 62.70000000000001 0 0 0 71.81552898003255 159.21380850457618 L 29.937325418241016 188.84328819013854 z" stroke="#ffffff"></path></g><g id="SvgjsG1661" class="apexcharts-series apexcharts-pie-series" seriesName="series-3" rel="3" data:realIndex="2"><path id="SvgjsPath1662" d="M 57.15671180986156 29.937325418240974 A 114.00000000000001 114.00000000000001 0 0 1 122.98010324662826 9.000001736319263 L 122.98905678564554 60.300000954975594 A 62.70000000000001 62.70000000000001 0 0 0 86.78619149542385 71.81552898003252 L 57.15671180986156 29.937325418240974 z" fill="rgba(234,84,85,1)" fill-opacity="1" stroke-opacity="1" stroke-linecap="butt" stroke-width="2" stroke-dasharray="0" class="apexcharts-pie-area apexcharts-donut-slice-2" index="0" j="2" data:angle="35.27999999999997" data:startAngle="324.72" data:strokeWidth="2" data:value="9.8" data:pathOrig="M 57.15671180986156 29.937325418240974 A 114.00000000000001 114.00000000000001 0 0 1 122.98010324662826 9.000001736319263 L 122.98905678564554 60.300000954975594 A 62.70000000000001 62.70000000000001 0 0 0 86.78619149542385 71.81552898003252 L 57.15671180986156 29.937325418240974 z" stroke="#ffffff"></path></g><g id="SvgjsG1637" class="apexcharts-datalabels"><text id="SvgjsText1638" font-family="Helvetica, Arial, sans-serif" x="201.46685525267668" y="163.60388068590845" text-anchor="middle" dominant-baseline="auto" font-size="12px" font-weight="600" fill="#ffffff" class="apexcharts-text apexcharts-pie-label" filter="url(#SvgjsFilter1639)" style="font-family: Helvetica, Arial, sans-serif;">65.2%</text></g><g id="SvgjsG1650" class="apexcharts-datalabels"><text id="SvgjsText1651" font-family="Helvetica, Arial, sans-serif" x="35.91830001858601" y="108.08356515962996" text-anchor="middle" dominant-baseline="auto" font-size="12px" font-weight="600" fill="#ffffff" class="apexcharts-text apexcharts-pie-label" filter="url(#SvgjsFilter1652)" style="font-family: Helvetica, Arial, sans-serif;">25.0%</text></g><g id="SvgjsG1663" class="apexcharts-datalabels"><text id="SvgjsText1664" font-family="Helvetica, Arial, sans-serif" x="96.22683392794444" y="38.804275176953695" text-anchor="middle" dominant-baseline="auto" font-size="12px" font-weight="600" fill="#ffffff" class="apexcharts-text apexcharts-pie-label" filter="url(#SvgjsFilter1665)" style="font-family: Helvetica, Arial, sans-serif;">9.8%</text></g></g></g></g><line id="SvgjsLine1674" x1="0" y1="0" x2="246" y2="0" stroke="#b6b6b6" stroke-dasharray="0" stroke-width="1" stroke-linecap="butt" class="apexcharts-ycrosshairs"></line><line id="SvgjsLine1675" x1="0" y1="0" x2="246" y2="0" stroke-dasharray="0" stroke-width="0" stroke-linecap="butt" class="apexcharts-ycrosshairs-hidden"></line></g></svg><div class="apexcharts-tooltip apexcharts-theme-dark"><div class="apexcharts-tooltip-series-group" style="order: 1;"><span class="apexcharts-tooltip-marker" style="background-color: rgb(61, 127, 249);"></span><div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;"><div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label"></span><span class="apexcharts-tooltip-text-y-value"></span></div><div class="apexcharts-tooltip-goals-group"><span class="apexcharts-tooltip-text-goals-label"></span><span class="apexcharts-tooltip-text-goals-value"></span></div><div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div></div></div><div class="apexcharts-tooltip-series-group" style="order: 2;"><span class="apexcharts-tooltip-marker" style="background-color: rgb(39, 207, 167);"></span><div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;"><div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label"></span><span class="apexcharts-tooltip-text-y-value"></span></div><div class="apexcharts-tooltip-goals-group"><span class="apexcharts-tooltip-text-goals-label"></span><span class="apexcharts-tooltip-text-goals-value"></span></div><div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div></div></div><div class="apexcharts-tooltip-series-group" style="order: 3;"><span class="apexcharts-tooltip-marker" style="background-color: rgb(234, 84, 85);"></span><div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;"><div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label"></span><span class="apexcharts-tooltip-text-y-value"></span></div><div class="apexcharts-tooltip-goals-group"><span class="apexcharts-tooltip-text-goals-label"></span><span class="apexcharts-tooltip-text-goals-value"></span></div><div class="apexcharts-tooltip-z-group"><span class="apexcharts-tooltip-text-z-label"></span><span class="apexcharts-tooltip-text-z-value"></span></div></div></div></div></div></div>
+                                        </div>
+            
+                                        <div class="flex-between gap-8 flex-wrap mt-20">
+                                            <div class="flex-align flex-column">
+                                                <span class="w-12 h-12 bg-white border border-3 border-main-600 rounded-circle"></span>
+                                                <span class="text-13 my-4 text-main-600">Mentoring</span>
+                                                <h6 class="mb-0">65.2%</h6>
+                                            </div>
+                                            <div class="flex-align flex-column">
+                                                <span class="w-12 h-12 bg-white border border-3 border-main-two-600 rounded-circle"></span>
+                                                <span class="text-13 my-4 text-main-two-600">Organization</span>
+                                                <h6 class="mb-0">25.0%</h6>
+                                            </div>
+                                            <div class="flex-align flex-column">
+                                                <span class="w-12 h-12 bg-white border border-3 border-danger-600 rounded-circle"></span>
+                                                <span class="text-13 my-4 text-danger-600">Planning</span>
+                                                <h6 class="mb-0">9.8%</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Donut Chart End -->
+                            </div>
+            
                         </div>
                     </div>
                     
@@ -121,9 +223,6 @@
                 <div class="flex-align flex-wrap gap-16">
                     <a href=#
                         class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">License</a>
-                    <a href=#
-                        class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">More
-                        Themes</a>
                     <a href=#
                         class="text-gray-300 text-13 fw-normal hover-text-main-600 hover-text-decoration-underline">Documentation</a>
                     <a href=#
