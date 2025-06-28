@@ -8,7 +8,11 @@ from django.urls import path
 from .views import file_upload_view
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import groq_chat_api
 from .views import CurrentUserAPI, ExamResultAPI
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('', views.signup, name='home'),
     path('index',views.index,name='index'),
@@ -57,6 +61,9 @@ urlpatterns = [
     path('files', file_upload_view, name='file-upload'),
     path('api/currentuser/', CurrentUserAPI.as_view(), name='current_user'),
     path('api/examresults/', ExamResultAPI.as_view(), name='exam_results'),
+    path("api/groq-chat/", groq_chat_api, name="groq_chat_api"),
+    path("api/groq-chat-file/", views.groq_chat_file, name="groq_chat_file"),
+
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

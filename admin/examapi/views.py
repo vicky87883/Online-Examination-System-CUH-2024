@@ -60,6 +60,15 @@ from rest_framework.response import Response
 import logging
 from .models import ExamResult
 from .serializers import ExamResultSerializer
+import os
+from dotenv import load_dotenv
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.shortcuts import render
+from groq import Groq
+import fitz
+load_dotenv()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 logger = logging.getLogger(__name__)
 def register(request):
     if request.method == "POST":
@@ -166,7 +175,6 @@ def starred(request):
 def studentcourses(request):
     return render(request,'student-courses.html')
 def students(request):
-    
     api_url = "http://127.0.0.1:8000/studentapi/"
     try:
         response = requests.get(api_url)
@@ -393,3 +401,71 @@ class CurrentUserAPI(APIView):
             'username': user.username,
             'email': user.email,
         })
+    
+@csrf_exempt
+def groq_chat_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        message = data.get("message", "")
+
+        try:
+            response = client.chat.completions.create(
+                model="llama3-8b-8192",
+                messages=[
+                    {"role": "system", "content": "You are a helpful study assistant."},
+                    {"role": "user", "content": message}
+                ]
+            )
+            reply = response.choices[0].message.content
+            return JsonResponse({"reply": reply})
+        except Exception as e:
+            return JsonResponse({"reply": f"Error: {str(e)}"}, status=500)
+def extract_text_from_file(file):
+    doc = fitz.open(stream=file.read(), filetype="pdf")
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    return text
+
+@csrf_exempt
+def groq_chat_file(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        file = request.FILES["file"]
+        extracted_text = extract_text_from_file(file)
+        if not extracted_text:
+            return JsonResponse({"reply": "Unsupported file type."}, status=400)
+
+        # Send to Groq LLM
+        prompt = f"Read and analyze the following document:\n\n{extracted_text[:4000]}"
+        try:
+            response = client.chat.completions.create(
+                model="llama3-8b-8192",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+            )
+            content = response.choices[0].message.content
+            return JsonResponse({"reply": content})
+        except Exception as e:
+            return JsonResponse({"reply": f"Error: {str(e)}"}, status=500)
+
+    return JsonResponse({"reply": "No file provided."}, status=400)
+
+    parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            return Response({"error": "No file uploaded"}, status=400)
+
+        content = uploaded_file.read().decode('utf-8', errors='ignore')  # Assumes text-based file
+        prompt = f"Read this file content and provide a helpful response:\n\n{content}"
+
+        try:
+            response = client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model="mixtral-8x7b-32768"
+            )
+            reply = response.choices[0].message.content
+            return Response({"reply": reply})
+        except Exception as e:
+            return Response({"reply": "⚠️ Error processing file."}, status=500)
