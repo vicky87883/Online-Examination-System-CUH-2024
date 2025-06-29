@@ -1,79 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exam</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Professional Test Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    body, html {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      height: 100%;
-      overflow: hidden;
+      font-family: 'Inter', sans-serif;
     }
-    .alert-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255, 0, 0, 0.85);
+
+    body {
+      background: #f7fafc;
+      color: #1a202c;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #0d47a1;
       color: white;
-      font-size: 24px;
-      font-weight: bold;
-      justify-content: center;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      z-index: 9999;
-      text-align: center;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .timer {
+      background: #1565c0;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .container {
+      display: flex;
+      gap: 1.5rem;
       padding: 2rem;
     }
-    #mainContent {
-      visibility: hidden;
-      padding: 2rem;
+
+    .questions-panel, .navigation-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+
+    .questions-panel {
+      flex: 3;
+    }
+
+    .navigation-panel {
+      flex: 1;
+    }
+
+    .question p {
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .options label {
+      display: block;
+      padding: 0.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .options label:hover {
+      background: #e3f2fd;
+    }
+
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1rem;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: #0d47a1;
+    }
+
+    .navigation-panel h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+
+    .nav-grid button {
+      padding: 0.5rem;
+      font-weight: 600;
+      border: 1px solid #ccc;
+      background: #f1f5f9;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .nav-grid button.active {
+      background: #1976d2;
+      color: white;
+      border-color: #1976d2;
     }
   </style>
 </head>
 <body>
-  <div class="alert-overlay" id="alertOverlay">
-    Security Alert!<br/>You exited fullscreen.<br/>Logging out...
-  </div>
+  <header>
+    TCS NQTCT 1: Number Systems
+    <div class="timer" id="timer">Time Left: <span id="time">20:00</span></div>
+  </header>
 
-  <div id="mainContent">
-    <h1>Exam Started</h1>
-    <p>Questions will appear here...</p>
+  <div class="container">
+    <div class="questions-panel">
+      <form id="exam-form">
+        {% csrf_token %}
+        <div id="questions-container"></div>
+        <div class="actions">
+          <button type="button" class="btn" onclick="submitExam()">Submit Test</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="navigation-panel">
+      <h3>Navigation</h3>
+      <div id="navigation-buttons" class="nav-grid"></div>
+    </div>
   </div>
 
   <script>
-    function logoutDueToViolation() {
-      document.getElementById('alertOverlay').style.display = 'flex';
-      document.getElementById('mainContent').style.display = 'none';
-      setTimeout(() => {
-        window.location.href = '/logout/';
-      }, 3000);
+    let timerDuration = 20 * 60;
+    const reviewedQuestions = new Set();
+
+    function startTimer() {
+      const timerElement = document.getElementById("time");
+      setInterval(() => {
+        if (timerDuration > 0) {
+          timerDuration--;
+          const minutes = Math.floor(timerDuration / 60);
+          const seconds = timerDuration % 60;
+          timerElement.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        } else {
+          alert("Time is up!");
+          submitExam();
+        }
+      }, 1000);
     }
 
-    function handleSecurityEvents() {
-      document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) logoutDueToViolation();
-      });
-      window.addEventListener('blur', logoutDueToViolation);
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') logoutDueToViolation();
+    async function loadQuestions() {
+      const response = await fetch('/api/questions/');
+      const questions = await response.json();
+      const container = document.getElementById('questions-container');
+      const navigation = document.getElementById('navigation-buttons');
+
+      questions.forEach((q, index) => {
+        container.innerHTML += `
+          <div id="question-${q.id}" class="question">
+            <p>Q${index + 1}. ${q.text}</p>
+            <div class="options">
+              <label><input type="radio" name="q${q.id}" value="1"> ${q.option1}</label>
+              <label><input type="radio" name="q${q.id}" value="2"> ${q.option2}</label>
+              <label><input type="radio" name="q${q.id}" value="3"> ${q.option3}</label>
+              <label><input type="radio" name="q${q.id}" value="4"> ${q.option4}</label>
+            </div>
+            <div class="actions">
+              <button class="btn" type="button" onclick="markForReview(${q.id})">Mark for Review</button>
+              <button class="btn" type="button" onclick="clearResponse(${q.id})">Clear Response</button>
+            </div>
+          </div>
+        `;
+
+        navigation.innerHTML += `
+          <button id="nav-btn-${q.id}" onclick="navigateTo(${q.id})">${index + 1}</button>
+        `;
       });
     }
 
-    async function enterFullscreenAndStartExam() {
-      try {
-        await document.documentElement.requestFullscreen();
-        document.getElementById('mainContent').style.visibility = 'visible';
-        handleSecurityEvents();
-      } catch {
-        logoutDueToViolation();
+    function markForReview(questionId) {
+      const questionButton = document.getElementById(`nav-btn-${questionId}`);
+      if (reviewedQuestions.has(questionId)) {
+        reviewedQuestions.delete(questionId);
+        questionButton.classList.remove('active');
+      } else {
+        reviewedQuestions.add(questionId);
+        questionButton.classList.add('active');
       }
     }
 
-    window.onload = enterFullscreenAndStartExam;
+    function clearResponse(questionId) {
+      const options = document.getElementsByName(`q${questionId}`);
+      options.forEach(option => option.checked = false);
+    }
+
+    function navigateTo(questionId) {
+      document.getElementById(`question-${questionId}`).scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function submitExam() {
+      const answers = [];
+      document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+        const questionId = input.name.replace('q', '');
+        if (!reviewedQuestions.has(parseInt(questionId))) {
+          const selectedOption = input.value;
+          answers.push({ question_id: questionId, selected_option: selectedOption });
+        }
+      });
+
+      const response = await fetch('/api/submit_exam/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: JSON.stringify({ answers }),
+      });
+
+      const result = await response.json();
+      if (result.redirect_url) {
+        window.location.href = result.redirect_url;
+      } else {
+        alert('Error submitting exam.');
+      }
+    }
+
+    window.onload = function () {
+      loadQuestions();
+      startTimer();
+    };
   </script>
 </body>
 </html>
