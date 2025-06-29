@@ -1,267 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Portal</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7fc;
-            color: #333;
-        }
-
-        .header {
-            background-color: #0056b3;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .timer {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 16px;
-            background: #023e8a;
-            color: #ffffff;
-            padding: 8px 15px;
-            border-radius: 5px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: row;
-            margin: 20px;
-            gap: 20px;
-        }
-
-        .question-section {
-            flex: 3;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .question-navigation {
-            flex: 1;
-            padding: 20px;
-            background-color: #f1f5f9;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .question-container {
-            margin-bottom: 20px;
-        }
-
-        .question-container p {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .options label {
-            display: block;
-            margin: 10px 0;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .btn:hover {
-            background-color: #023e8a;
-        }
-
-        .navigation-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .navigation-buttons button {
-            width: 40px;
-            height: 40px;
-            background-color: #e0f7fa;
-            color: #0056b3;
-            border: 1px solid #a2d9e0;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .navigation-buttons button:hover,
-        .navigation-buttons button.active {
-            background-color: #0056b3;
-            color: white;
-        }
-
-        .navigation-buttons button.reviewed {
-            background-color: #ffcc00;
-            color: white;
-            border: none;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .result-section {
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .result-section h3 {
-            margin-bottom: 10px;
-        }
-    </style>
-    <script>
-        let timerDuration = 20 * 60; // 20 minutes in seconds
-        const reviewedQuestions = new Set(); // Keeps track of marked questions
-
-        function startTimer() {
-            const timerElement = document.getElementById("timer");
-            setInterval(() => {
-                if (timerDuration > 0) {
-                    timerDuration--;
-                    const minutes = Math.floor(timerDuration / 60);
-                    const seconds = timerDuration % 60;
-                    timerElement.textContent = `Time Left: ${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                } else {
-                    alert("Time is up!");
-                    submitExam();
-                }
-            }, 1000);
-        }
-
-        async function loadQuestions() {
-            const response = await fetch('/api/questions/');
-            const questions = await response.json();
-            const container = document.getElementById('questions-container');
-            const navigation = document.getElementById('navigation-buttons');
-            let questionNumber = 1;
-
-            questions.forEach(q => {
-                // Add question to main container
-                container.innerHTML += `
-                    <div id="question-${q.id}" class="question-container">
-                        <p>Question ${questionNumber}: ${q.text}</p>
-                        <div class="options">
-                            <label><input type="radio" name="q${q.id}" value="1"> ${q.option1}</label>
-                            <label><input type="radio" name="q${q.id}" value="2"> ${q.option2}</label>
-                            <label><input type="radio" name="q${q.id}" value="3"> ${q.option3}</label>
-                            <label><input type="radio" name="q${q.id}" value="4"> ${q.option4}</label>
-                        </div>
-                        <div class="controls">
-                            <button class="btn" type="button" onclick="markForReview(${q.id})">Mark for Review</button>
-                            <button class="btn" type="button" onclick="clearResponse(${q.id})">Clear Response</button>
-                        </div>
-                    </div>
-                `;
-
-                // Add question to navigation buttons
-                navigation.innerHTML += `
-                    <button id="nav-btn-${q.id}" onclick="navigateTo(${q.id})">${questionNumber}</button>
-                `;
-                questionNumber++;
-            });
-        }
-
-        function markForReview(questionId) {
-            const questionButton = document.getElementById(`nav-btn-${questionId}`);
-            if (reviewedQuestions.has(questionId)) {
-                reviewedQuestions.delete(questionId);
-                questionButton.classList.remove('reviewed'); // Remove reviewed style
-            } else {
-                reviewedQuestions.add(questionId);
-                questionButton.classList.add('reviewed'); // Add reviewed style
-            }
-        }
-
-        function navigateTo(questionId) {
-            document.getElementById(`question-${questionId}`).scrollIntoView({ behavior: "smooth" });
-            document.querySelectorAll('.navigation-buttons button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`nav-btn-${questionId}`).classList.add('active');
-        }
-
-        async function submitExam() {
-            const answers = [];
-            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-                const questionId = input.name.replace('q', '');
-                if (!reviewedQuestions.has(parseInt(questionId))) { // Skip reviewed questions
-                    const selectedOption = input.value;
-                    answers.push({ question_id: questionId, selected_option: selectedOption });
-                }
-            });
-
-            const response = await fetch('/api/submit_exam/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                },
-                body: JSON.stringify({ answers }),
-            });
-
-            const result = await response.json();
-            if (result.redirect_url) {
-                window.location.href = result.redirect_url;
-            } else {
-                alert('Error submitting exam.');
-            }
-        }
-
-        window.onload = function() {
-            loadQuestions();
-            startTimer();
-        };
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      height: 100%;
+      overflow: hidden;
+    }
+    .alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255, 0, 0, 0.85);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 2rem;
+    }
+    #mainContent {
+      visibility: hidden;
+      padding: 2rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        Full Stack Web Development Exam
-        <div id="timer" class="timer">Time Left: 20:00</div>
-    </div>
-    <div class="container">
-        <div class="question-section">
-            <form id="exam-form">
-                {% csrf_token %}
-                <div id="questions-container"></div>
-                <div class="footer">
-                    <button type="button" class="btn" onclick="submitExam()">Submit Exam</button>
-                </div>
-            </form>
-        </div>
-        <div class="question-navigation">
-            <h3>Navigation</h3>
-            <div id="navigation-buttons" class="navigation-buttons"></div>
-        </div>
-    </div>
+  <div class="alert-overlay" id="alertOverlay">
+    Security Alert!<br/>You exited fullscreen.<br/>Logging out...
+  </div>
+
+  <div id="mainContent">
+    <h1>Exam Started</h1>
+    <p>Questions will appear here...</p>
+  </div>
+
+  <script>
+    function logoutDueToViolation() {
+      document.getElementById('alertOverlay').style.display = 'flex';
+      document.getElementById('mainContent').style.display = 'none';
+      setTimeout(() => {
+        window.location.href = '/logout/';
+      }, 3000);
+    }
+
+    function handleSecurityEvents() {
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) logoutDueToViolation();
+      });
+      window.addEventListener('blur', logoutDueToViolation);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') logoutDueToViolation();
+      });
+    }
+
+    async function enterFullscreenAndStartExam() {
+      try {
+        await document.documentElement.requestFullscreen();
+        document.getElementById('mainContent').style.visibility = 'visible';
+        handleSecurityEvents();
+      } catch {
+        logoutDueToViolation();
+      }
+    }
+
+    window.onload = enterFullscreenAndStartExam;
+  </script>
 </body>
 </html>
